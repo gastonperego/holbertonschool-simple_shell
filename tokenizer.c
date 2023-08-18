@@ -43,30 +43,34 @@ char **tokening(char *input, char *delim)
  *@command: array of arguments
  *@cicles: counter
  */
-void create_child(char **command, int cicles)
+void create_child(char **cmd, int cicles)
 {
-	int sta, i = 0;
-	struct stat st;
-	char **path = NULL;
-	(void)cicles;
+    int sta, i = 0;
+    struct stat st;
+    char **path = NULL;
+    (void)cicles;
 
-	path = get_path();
-	while (command[i] != NULL)
-		i++;
+    while (cmd[i] != NULL)
+        i++;
 
-	if (strcmp(command[0], "env") == 0 && i == 1)
-	{
-		print_env();
-		free_dp(command);
-		free_dp(path);
-		return;
-	}
-	sta = stat(command[0], &st);
+    if (strcmp(cmd[0], "env") == 0 && i == 1)
+    {
+        print_env();
+        free_dp(cmd);
+        return;
+    }
+    sta = stat(cmd[0], &st);
 
-	if (sta == 0)
-		forker(command, path);
-	else
-		forker2(command, path);
+    if (sta == 0)
+    {
+        forker(cmd);
+    }
+    else
+    {
+        path = get_path();
+        forker2(cmd, path);
+        free_dp(path); 
+    }
 }
 
 /**
@@ -100,37 +104,35 @@ char **get_path()
  *@command: Array of arguments
  *@path: The path
  */
-void forker(char **command, char **path)
+void forker(char **cmd)
 {
-	int status = 0, wait_error = 0;
-	pid_t pid = 0;
+    int status = 0;
+    pid_t pid = 0;
 
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("Error: ");
-		free_dp(command);
-		free_dp(path);
-		exit(EXIT_FAILURE); }
-	else if (pid == 0)
-	{
-		execve(command[0], command, NULL);
-		perror("Error executing command");
-		free_dp(command);
-		free_dp(path);
-		exit(EXIT_FAILURE); }
-	else
-	{
-	wait_error = waitpid(pid, &status, 0);
-		if (wait_error < 0)
-		{
-			perror("Error waiting for child process");
-			free_dp(command);
-			free_dp(path);
-			exit(EXIT_FAILURE); }
-			free_dp(command);
-			free_dp(path);
-		}
+    pid = fork();
+    if (pid < 0)
+    {
+        perror("Error: ");
+        free_dp(cmd);
+        exit(EXIT_FAILURE);
+    }
+    else if (pid == 0)
+    {
+        if (execve(cmd[0], cmd, NULL) < 0)
+        {
+            perror("Error executing cmd");
+            free_dp(cmd);
+            exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status)) {
+            int exit_status = WEXITSTATUS(status);
+            exit(exit_status);
+        }
+    }
 }
 
 /**
@@ -138,47 +140,52 @@ void forker(char **command, char **path)
  *@command: Array of arguments
  *@path: The path
  */
-void forker2(char **command, char **path)
+void forker2(char **cmd, char **path)
 {
-	char *full_path = NULL;
-	struct stat st;
-	pid_t pid;
-	int i = 0, status = 0;
+    char *full_path = NULL;
+    struct stat st;
+    pid_t pid;
+    int i = 0, status = 0;
 
-	while (path[i])
-	{
-		char *temp_path = strdup(path[i]);
-
-		if (temp_path == NULL)
-		{
-			perror("Memory allocation error");
-			free_dp(path), free_exit(command);
-		}
-		full_path = strcat(temp_path, "/");
-		full_path = strcat(full_path, command[0]);
-
-		if (stat(full_path, &st) == 0)
-		{
-			pid = fork();
-			if (pid == 0)
-			{
-				if (execve(full_path, command, NULL) < 0)
-				{
-					perror(command[0]);
-					free(temp_path);
-					free_dp(path);
-					free_exit(command);
-				}
-			}
-			else
-				waitpid(pid, &status, 0);
-			free(temp_path);
-			free_dp(path);
-			free_dp(command);
-			return;
-		}
-		free(temp_path), i++;
-	}
-	free_dp(path);
+    while (path[i])
+    {
+        full_path = malloc(sizeof(char) * (strlen(path[i]) + strlen(cmd[0]) + 2));
+        if (full_path == NULL)
+        {
+            perror("Error de asignación de memoria");
+            free_dp(path);
+            free_exit(cmd);
+        }
+        strcpy(full_path, path[i]);
+        strcat(full_path, "/");
+        strcat(full_path, cmd[0]);
+        if (stat(full_path, &st) == 0)
+        {
+            pid = fork();
+            if (pid == 0)
+            {
+                if (execve(full_path, cmd, NULL) < 0)
+                {
+                    perror(cmd[0]);
+                    free_dp(path);
+                    free_exit(cmd);
+                }
+            }
+            else
+            {
+                waitpid(pid, &status, 0);
+                if (WIFEXITED(status))
+                {
+                    status = WEXITSTATUS(status);
+                    if (status != 0)
+                    {
+                        fprintf(stderr, "Exited with status: %d\n", status);
+                    }
+                }
+            }
+        }
+        free(full_path), i++;
+    }
+	free_dp(cmd);
+    free_dp(path);
 }
-
