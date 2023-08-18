@@ -34,7 +34,6 @@ void create_child(char **cmd, int cicles);
 void free_dp(char **cmd);
 void free_exit(char **cmd);
 char **tokening(char *input, char *delim);
-int change_dir(const char *path);
 void forker(char **cmd, int *exit_status);
 void forker2(char **cmd, char **path, int cicles);
 

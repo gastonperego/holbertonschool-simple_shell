@@ -61,7 +61,7 @@ void free_exit(char **command)
 
 void msgerror(int cicles, char **command)
 {
-	dprintf(STDERR_FILENO,"hsh: %d: %s: not found\n", cicles, command[0]);
+	dprintf(STDERR_FILENO, "hsh: %d: %s: not found\n", cicles, command[0]);
 }
 
 /**
