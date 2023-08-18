@@ -35,7 +35,7 @@ void free_dp(char **command);
 void free_exit(char **command);
 char **tokening(char *input, char *delim);
 int change_dir(const char *path);
-void forker(char **command, char **path);
+void forker(char **cmd);
 void forker2(char **command, char **path);
 
 #endif
