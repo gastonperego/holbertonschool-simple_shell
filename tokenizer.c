@@ -21,7 +21,10 @@ char **tokening(char *input, char *delim)
 	}
 	free(input_copy);
 	count++;
-
+    if (count == 1)
+    {
+        return NULL;
+    }
 	av = malloc(sizeof(char *) * count); /*FREE AV*/
 	if (av == NULL)
 		exit(-1);
@@ -72,7 +75,6 @@ void create_child(char **cmd, int cicles)
         free_dp(path); 
     }
 }
-
 /**
  *get_path - Function that get the path
  *Return: Path
@@ -107,10 +109,10 @@ char **get_path()
 void forker(char **cmd, int *exit_status)
 {
     int status = 0;
-    pid_t pid;
+    pid_t pid = 0;
 
     pid = fork();
-    if (pid == -1)
+    if (pid < 0)
     {
         perror("Error: ");
         free_dp(cmd);
@@ -118,19 +120,20 @@ void forker(char **cmd, int *exit_status)
     }
     else if (pid == 0)
     {
-        if (execve(cmd[0], cmd, NULL) == -1)
+        if (execve(cmd[0], cmd, NULL) < 0)
         {
             perror("Error executing cmd");
             free_dp(cmd);
             exit(EXIT_FAILURE);
         }
     }
-    else if (pid > 0)
+    else
     {
         waitpid(pid, &status, 0);
         if (WIFEXITED(status)) {
             *exit_status = WEXITSTATUS(status);
 			free_dp(cmd);
+            exit(*exit_status);
         }
     }
 }

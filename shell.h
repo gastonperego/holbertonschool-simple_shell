@@ -25,17 +25,17 @@ int main();
 void prompt(void);
 void handle(int signals);
 void _EOF(char *buffer);
-void shell_exit(char **command);
+void shell_exit(char **cmd);
 void print_env();
 char **_getPATH(char **env);
-void msgerror(int cicles, char **command);
+void msgerror(int cicles, char **cmd);
 char **get_path();
-void create_child(char **command, int cicles);
-void free_dp(char **command);
-void free_exit(char **command);
+void create_child(char **cmd, int cicles);
+void free_dp(char **cmd);
+void free_exit(char **cmd);
 char **tokening(char *input, char *delim);
 int change_dir(const char *path);
 void forker(char **cmd, int *exit_status);
-void forker2(char **command, char **path);
+void forker2(char **cmd, char **path);
 
 #endif

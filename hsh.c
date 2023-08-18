@@ -5,48 +5,34 @@
  */
 int main(void)
 {
-	char *buffer = NULL, **command = NULL;
-	size_t buf_size = 0;
-	ssize_t chars_readed = 0;
-	int cicles = 0;
-
-	while (1)
-	{
-		cicles++, prompt();
-		chars_readed = getline(&buffer, &buf_size, stdin);
-		if (chars_readed == EOF)
-			_EOF(buffer);
-		else if (*buffer == '\n')
-			free(buffer);
-		else
-		{
-			command = tokening(buffer, " \t\n");
-			free(buffer);
-			if (strcmp(command[0], "exit") == 0)
-				shell_exit(command);
-			else if (strcmp(command[0], "cd") == 0)
-			{
-				if (command[1] != NULL)
-				{
-					if (change_dir(command[1]) == 0)
-						printf("Failed to change directory to %s\n", command[1]);
-					else
-						printf("Changed directory to %s\n", command[1]);
-				}
-				else
-					printf("Usage: cd <directory>\n");
-				free_dp(command);
-			}
-			else {
-				create_child(command, cicles);
-			}
-		}
-		fflush(stdin);
-		buffer = NULL, buf_size = 0;
-	}
-	if (chars_readed == -1)
-		return (EXIT_FAILURE);
-	return (EXIT_SUCCESS);
+    char *buffer = NULL, **cmd = NULL;
+    size_t buf_size = 0;
+    ssize_t chars_readed = 0;
+    int cicles = 0;
+    while (1)
+    {
+        cicles++, prompt();
+        chars_readed = getline(&buffer, &buf_size, stdin);
+        if (chars_readed == EOF)
+            _EOF(buffer);
+        else if (*buffer == '\n')
+            free(buffer);
+        else
+        {
+            cmd = tokening(buffer, " \n\t");
+            free(buffer);
+            if (cmd != NULL)
+            {
+                if (strcmp(cmd[0], "exit") == 0)
+                    shell_exit(cmd);
+                else {
+                    create_child(cmd, cicles); } } }
+        fflush(stdin);
+        buffer = NULL, buf_size = 0;
+    }
+    if (chars_readed == -1)
+        return (EXIT_FAILURE);
+    return (EXIT_SUCCESS);
 }
 
 /**
