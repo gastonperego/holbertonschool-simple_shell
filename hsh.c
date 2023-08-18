@@ -37,8 +37,9 @@ int main(void)
 					printf("Usage: cd <directory>\n");
 				free_dp(command);
 			}
-			else
+			else {
 				create_child(command, cicles);
+			}
 		}
 		fflush(stdin);
 		buffer = NULL, buf_size = 0;

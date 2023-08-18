@@ -28,9 +28,6 @@ void free_dp(char **command)
 	free(command[i]);
 	i++;
 	}
-
-	if (command[i] == NULL)
-		free(command[i]);
 	free(command);
 }
 

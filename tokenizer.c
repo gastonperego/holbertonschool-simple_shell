@@ -45,7 +45,7 @@ char **tokening(char *input, char *delim)
  */
 void create_child(char **cmd, int cicles)
 {
-    int sta, i = 0;
+    int sta, i = 0, exit_status = 2;
     struct stat st;
     char **path = NULL;
     (void)cicles;
@@ -61,9 +61,9 @@ void create_child(char **cmd, int cicles)
     }
     sta = stat(cmd[0], &st);
 
-    if (sta == 0)
-    {
-        forker(cmd);
+    if (sta == 0) {
+        forker(cmd, &exit_status);
+        printf("exit_status = %d\n", exit_status);
     }
     else
     {
@@ -104,13 +104,13 @@ char **get_path()
  *@command: Array of arguments
  *@path: The path
  */
-void forker(char **cmd)
+void forker(char **cmd, int *exit_status)
 {
     int status = 0;
-    pid_t pid = 0;
+    pid_t pid;
 
     pid = fork();
-    if (pid < 0)
+    if (pid == -1)
     {
         perror("Error: ");
         free_dp(cmd);
@@ -118,20 +118,19 @@ void forker(char **cmd)
     }
     else if (pid == 0)
     {
-        if (execve(cmd[0], cmd, NULL) < 0)
+        if (execve(cmd[0], cmd, NULL) == -1)
         {
             perror("Error executing cmd");
             free_dp(cmd);
             exit(EXIT_FAILURE);
         }
     }
-    else
+    else if (pid > 0)
     {
         waitpid(pid, &status, 0);
         if (WIFEXITED(status)) {
-            int exit_status = WEXITSTATUS(status);
+            *exit_status = WEXITSTATUS(status);
 			free_dp(cmd);
-            exit(exit_status);
         }
     }
 }
@@ -172,7 +171,7 @@ void forker2(char **cmd, char **path)
                     free_exit(cmd);
                 }
             }
-            else
+            else if (pid > 0)
             {
                 waitpid(pid, &status, 0);
                 if (WIFEXITED(status))
@@ -183,10 +182,16 @@ void forker2(char **cmd, char **path)
                         fprintf(stderr, "Exited with status: %d\n", status);
                     }
                 }
+            } else {
+                printf("errror\n");
             }
+            break;
         }
         free(full_path), i++;
     }
+    if (path[i] != NULL)
+    {
+        free(full_path);
+    }
 	free_dp(cmd);
-    free_dp(path);
 }
