@@ -92,10 +92,14 @@ void shell_exit(char **cmd)
     {
         free_dp(cmd);
         exit(0);
-    }
 
     sta_tus = atoi(cmd[1]);
     free_dp(cmd);
-    exit(sta_tus);
+
+    if (sta_tus == 0)
+		exit(2); 
+    else
+        exit(sta_tus);
+	}
 }
 
