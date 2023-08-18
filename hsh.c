@@ -84,18 +84,18 @@ void _EOF(char *buffer)
 *shell_exit - Exit the shell
 *@command: Array of arguments
 */
-void shell_exit(char **command)
+void shell_exit(char **cmd)
 {
-	int sta_tus = 0;
+    int sta_tus = 0;
 
-	if (command[1] == NULL)
-	{
-		free_dp(command);
-		exit(EXIT_SUCCESS);
-	}
+    if (cmd[1] == NULL)
+    {
+        free_dp(cmd);
+        exit(2);
+    }
 
-	sta_tus = atoi(command[1]);
-	free_dp(command);
-	exit(sta_tus);
+    sta_tus = atoi(cmd[1]);
+    free_dp(cmd);
+    exit(sta_tus);
 }
 
