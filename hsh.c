@@ -91,7 +91,7 @@ void shell_exit(char **cmd)
     if (cmd[1] == NULL)
     {
         free_dp(cmd);
-        exit(2);
+        exit(0);
     }
 
     sta_tus = atoi(cmd[1]);
