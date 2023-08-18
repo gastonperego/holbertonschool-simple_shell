@@ -167,7 +167,7 @@ void forker2(char **cmd, char **path, int cicles)
             pid = fork();
             if (pid == 0)
             {
-                if (execve(full_path, cmd, NULL) < 0)
+                if (execve(full_path, cmd, environ) < 0)
                 {
                     perror(cmd[0]);
                     free_dp(path);
