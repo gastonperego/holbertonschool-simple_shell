@@ -21,12 +21,12 @@ extern char **environ;
  * Prototypes
  */
 
-int main();
+int main(void);
 void prompt(void);
 void handle(int signals);
 void _EOF(char *buffer);
 void shell_exit(char **cmd);
-void print_env();
+void print_env(void);
 char **_getPATH(char **env);
 void msgerror(int cicles, char **cmd);
 char **get_path();
