@@ -130,6 +130,7 @@ void forker(char **cmd)
         waitpid(pid, &status, 0);
         if (WIFEXITED(status)) {
             int exit_status = WEXITSTATUS(status);
+			free_dp(cmd);
             exit(exit_status);
         }
     }
