@@ -71,7 +71,7 @@ void create_child(char **cmd, int cicles)
     else
     {
         path = get_path();
-        forker2(cmd, path);
+        forker2(cmd, path, cicles);
         free_dp(path); 
     }
 }
@@ -120,7 +120,7 @@ void forker(char **cmd, int *exit_status)
     }
     else if (pid == 0)
     {
-        if (execve(cmd[0], cmd, NULL) < 0)
+        if (execve(cmd[0], cmd, environ) < 0)
         {
             perror("Error executing cmd");
             free_dp(cmd);
@@ -143,7 +143,7 @@ void forker(char **cmd, int *exit_status)
  *@command: Array of arguments
  *@path: The path
  */
-void forker2(char **cmd, char **path)
+void forker2(char **cmd, char **path, int cicles)
 {
     char *full_path = NULL;
     struct stat st;
@@ -195,6 +195,10 @@ void forker2(char **cmd, char **path)
     if (path[i] != NULL)
     {
         free(full_path);
+    }
+    else
+    {
+        msgerror(cicles, cmd);
     }
 	free_dp(cmd);
 }
